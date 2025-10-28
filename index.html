@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML Accessibility Guide</title>
+    <style>
+        /* Global: softer, eye-friendly palette and spacing */
+        :root {
+            --primary-color: #2d6cdf;
+            /* calmer blue */
+            --secondary-color: #4a7bc8;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --text-color: #22303a;
+            --muted: #6b7a86;
+            --page-bg: #f6f8fa;
+            /* soft background for comfortable reading */
+            --card-bg: #ffffff;
+            --border-color: #e6ecf2;
+        }
+
+        /* Reset + better default reading rhythm */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--page-bg);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                Arial, "Noto Sans", "Liberation Sans", sans-serif;
+            color: var(--text-color);
+            line-height: 1.7;
+            padding: 32px;
+            max-width: 1000px;
+            margin: 0 auto 60px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 16px;
+        }
+
+        /* Header: subtle gradient and soft shadow */
+        header {
+            background: linear-gradient(180deg, rgba(45, 108, 223, 0.95), var(--primary-color));
+            color: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(34, 48, 58, 0.08);
+        }
+
+        header p {
+            color: rgba(255, 255, 255, 0.92);
+            margin-top: 0.35rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.2px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(74, 123, 200, 0.12);
+            padding-bottom: 0.5rem;
+            margin-top: 1.8rem;
+            margin-bottom: 0.85rem;
+        }
+
+        h3 {
+            margin-bottom: 0.6rem;
+            color: var(--text-color);
+        }
+
+        /* Section card style */
+        section {
+            background-color: transparent;
+            /* let inner .example cards contain the white surface */
+            padding: 0;
+            margin-bottom: 1.25rem;
+        }
+
+        .example {
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin: 0.8rem 0 1.25rem 0;
+            box-shadow: 0 6px 18px rgba(34, 48, 58, 0.04);
+            display: block;
+        }
+
+        /* Improve readability for code blocks */
+        pre {
+            background-color: #0f1720;
+            /* dark base for code */
+            color: #e6eef8;
+            padding: 0.9rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        code {
+            background-color: #f0f4f8;
+            padding: 0.18rem 0.36rem;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+            color: #0b2a4a;
+            font-size: 0.92rem;
+        }
+
+        /* Clear, accessible focus outlines */
+        a:focus,
+        button:focus,
+        input:focus,
+        select:focus {
+            outline: 3px solid rgba(45, 108, 223, 0.18);
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        /* Buttons */
+        button,
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.98rem;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        button:hover,
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(45, 108, 223, 0.14);
+        }
+
+        /* Skip link improved contrast when visible */
+        .skip-link {
+            position: absolute;
+            top: -60px;
+            left: 12px;
+            background: #0b3a6f;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 6px;
+            z-index: 100;
+            text-decoration: none;
+            transition: top 0.18s ease;
+        }
+
+        .skip-link:focus {
+            top: 12px;
+        }
+
+        nav[aria-label] ul {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            list-style: none;
+            margin-top: 0.6rem;
+        }
+
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            background: rgba(45, 108, 223, 0.06);
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.9rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.8rem 0.9rem;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: rgba(45, 108, 223, 0.09);
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) td {
+            background: #fbfdff;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* -------------------------
+           GOOD / BAD example styling
+           -------------------------
+           Add clear visual difference:
+           - green accent with check badge for good examples
+           - red accent with cross badge for bad examples
+           - color-coded code backgrounds for each type
+        */
+
+        .good-example,
+        .bad-example {
+            position: relative;
+            padding: 1rem 1.15rem;
+            border-radius: 8px;
+            margin: 0.9rem 0;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            display: block;
+        }
+
+        .good-example {
+            border-left: 6px solid var(--success-color);
+            background: linear-gradient(180deg, #f7fff8, var(--card-bg));
+            box-shadow: 0 10px 28px rgba(40, 167, 69, 0.04);
+        }
+
+        .bad-example {
+            border-left: 6px solid var(--danger-color);
+            background: linear-gradient(180deg, #fff7f7, var(--card-bg));
+            box-shadow: 0 10px 28px rgba(220, 53, 69, 0.04);
+        }
+
+        /* Bad / Good badges (simple, accessible) */
+        .good-example::before,
+        .bad-example::before {
+            content: "";
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .good-example::before {
+            content: "✔";
+            background: var(--success-color);
+            box-shadow: 0 6px 18px rgba(40, 167, 69, 0.12);
+        }
+
+        .bad-example::before {
+            content: "✖";
+            background: var(--danger-color);
+            box-shadow: 0 6px 18px rgba(220, 53, 69, 0.12);
+        }
+
+        /* Color-coded code blocks inside examples for quick visual differentiation */
+        .good-example pre {
+            background-color: #e9fff2;
+            color: #063e1b;
+        }
+
+        .bad-example pre {
+            background-color: #fff1f2;
+            color: #4a0b0b;
+        }
+
+        /* Slight lift on hover for examples to indicate interactivity */
+        .good-example:hover,
+        .bad-example:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 36px rgba(34, 48, 58, 0.06);
+        }
+
+        .tip {
+            background-color: #eef7ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 6px solid var(--primary-color);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            padding-top: 1rem;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Skip link to allow keyboard users to jump to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <h1>Comprehensive HTML Accessibility Guide</h1>
+        <p>Principles and practical examples for building websites everyone can use</p>
+    </header>
+
+    <!-- Main navigation; aria-label describes the purpose to assistive tech -->
+    <nav aria-label="Main menu">
+        <h2 class="visually-hidden">Main menu</h2>
+        <ul>
+            <li><a href="#semantic">Semantic HTML</a></li>
+            <li><a href="#images">Images &amp; alt text</a></li>
+            <li><a href="#forms">Forms &amp; accessibility</a></li>
+            <li><a href="#navigation">Navigation &amp; accessibility</a></li>
+            <li><a href="#tables">Tables &amp; accessibility</a></li>
+            <li><a href="#aria">ARIA attributes</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <!-- Section: Semantic HTML -->
+        <section id="semantic">
+            <h2>Semantic HTML</h2>
+            <p>Using appropriate semantic elements helps screen readers understand the page structure and provide a
+                better experience for users.</p>
+
+            <div class="example">
+                <h3>Semantic HTML example</h3>
+
+                <div class="good-example">
+                    <h4>Good example:</h4>
+                    <!-- Example code shows semantic structure with header, nav, main, article, footer -->
+                    <pre><code>&lt;header&gt;
+  &lt;h1&gt;Website Title&lt;/h1&gt;
+  &lt;nav&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+  &lt;article&gt;
+    &lt;h2&gt;Article Title&lt;/h2&gt;
+    &lt;p&gt;Article content...&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+  &lt;p&gt;Copyright &copy; 2023&lt;/p&gt;
+&lt;/footer&gt;</code></pre>
+                </div>
+
+                <div class="bad-example">
+                    <h4>Bad example:</h4>
+                    <pre><code>&lt;div id="header"&gt;
+  &lt;div class="title"&gt;Website Title&lt;/div&gt;
+  &lt;div class="nav"&gt;
+    &lt;div&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="content"&gt;
+  &lt;div class="post"&gt;
+    &lt;div class="post-title"&gt;Article Title&lt;/div&gt;
+    &lt;div class="post-content"&gt;Article content...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="footer"&gt;
+  &lt;div&gt;Copyright &copy; 2023&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                </div>
+            </div>
+
+            <div class="tip">
+                <h4>Tip:</h4>
+                <p>Use semantic elements like <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>,
+                    <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, and
+                    <code>&lt;footer&gt;</code> to improve accessibility.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Images -->
+        <section id="images">
+            <h2>Images &amp; alt text</h2>
+            <p>All meaningful images should include alt text describing the image for users who cannot see it.</p>
+
+            <div class="example">
+                <h3>Alt text for images</h3>
+
+                <div class="good-example">
+                    <h4>Good example:</h4>
+                    <pre><code>&lt;img src="cat.jpg" alt="White cat playing with a red yarn ball"&gt;</code></pre>
+                    <p>This alt text accurately describes the image.</p>
+                </div>
+
+                <div class="bad-example">
+                    <h4>Bad example:</h4>
+                    <pre><code>&lt;img src="cat.jpg" alt="Cat"&gt;</code></pre>
+                    <p>This alt text is not sufficient and is too generic.</p>
+                </div>
+
+                <div class="good-example">
+                    <h4>For purely decorative images:</h4>
+                    <pre><code>&lt;img src="divider.png" alt=""&gt;</code></pre>
+                    <p>Use an empty alt attribute for decorative images that convey no information.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Forms -->
+        <section id="forms">
+            <h2>Forms &amp; accessibility</h2>
+            <p>Forms should be usable with keyboard only and include clear labels.</p>
+
+            <div class="example"></div>
+            <h3>Accessible form</h3>
+
+            <form>
+                <div class="good-example">
+                    <h4>Good example:</h4>
+                    <div></div>
+                    <label for="name">Full name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div style="margin-top:0.6rem">
+                    <label for="email">Email address:</label>
+                    <input type="email" id="email" name="email" required aria-describedby="email-help">
+                    <small id="email-help">We will not share your email with anyone.</small>
+                </div>
+
+                <fieldset
+                    style="margin-top:0.6rem; padding:0.6rem; border-radius:8px; border:1px solid var(--border-color)">
+                    <legend>Preferred contact method:</legend>
+                    <input type="radio" id="contact-email" name="contact" value="email" checked>
+                    <label for="contact-email">Email</label>
+
+                    <input type="radio" id="contact-phone" name="contact" value="phone" style="margin-left:0.6rem">
+                    <label for="contact-phone">Phone</label>
+                </fieldset>
+
+                <div style="margin-top:0.8rem">
+                    <button type="submit">Submit</button>
+                </div>
+                </div>
+            </form>
+
+            <div class="tip"></div>
+            <h4>Form tips:</h4>
+            <ul>
+                <li>Associate each input with a label using the <code>for</code> and <code>id</code> attributes
+                </li>
+                <li>Use <code>fieldset</code> and <code>legend</code> for groups of options</li>
+                <li>Provide clear, accessible error messages</li>
+                <li>Ensure forms are usable with keyboard only</li>
+            </ul>
+            </div>
+            </div>
+        </section>
+
+        <!-- Section: Navigation -->
+        <section id="navigation"></section>
+        <h2>Navigation &amp; accessibility</h2>
+        <p>Navigation should be easy to use for all users, including keyboard users and screen reader users.</p>
+
+        <div class="example">
+            <h3>Navigation links</h3>
+
+            <div class="good-example">
+                <h4>Good example:</h4>
+                <nav aria-label="Main menu">
+                    <ul>
+                        <li><a href="#home" aria-current="page">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="tip">
+                <h4>Navigation tips:</h4>
+                <ul></ul>
+                <li>Provide "skip to main content" links to allow users to bypass long menus</li>
+                <li>Use <code>aria-current="page"</code> to indicate the current page</li>
+                <li>Ensure tab order is logical and predictable</li>
+                <li>Provide visual focus styles for links</li>
+                </ul>
+            </div>
+        </div>
+        </section>
+
+        <!-- Section: Tables -->
+        <section id="tables">
+            <h2>Tables &amp; accessibility</h2>
+            <p>Tables should have clear headers and relationships between headers and cells to help screen readers
+                understand the data.</p>
+
+            <div class="example">
+                <h3>Accessible table</h3>
+
+                <div class="good-example">
+                    <h4>Good example:</h4>
+                    <table>
+                        <caption>Product Prices</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Available Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Tablet</th>
+                                <td>1200 SAR</td>
+                                <td>15</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Smartphone</th>
+                                <td>800 SAR</td>
+                                <td>22</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Laptop</th>
+                                <td>2500 SAR</td>
+                                <td>8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="tip">
+                    <h4>Table tips:</h4>
+                    <ul>
+                        <li>Use <code>&lt;caption&gt;</code> to provide a title for the table</li>
+                        <li>Use <code>&lt;th scope="col"&gt;</code> for column headers and
+                            <code>&lt;th scope="row"&gt;</code> for row headers
+                        </li>
+                        <li>Use <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, and <code>&lt;tfoot&gt;</code>
+                            to group sections</li>
+                        <li>Avoid very complex multi-level tables when possible</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: ARIA -->
+        <section id="aria">
+            <h2>ARIA attributes</h2>
+            <p>ARIA (Accessible Rich Internet Applications) attributes provide additional accessibility when HTML alone
+                is insufficient.</p>
+
+            <div class="example">
+                <h3>Common ARIA uses</h3>
+
+                <div class="good-example">
+                    <h4>Example of a toggle button:</h4>
+                    <!-- aria-expanded and aria-controls help communicate state and relation to assistive tech -->
+                    <pre><code>&lt;button 
+  aria-expanded="false" 
+  aria-controls="dropdown-menu"&gt;
+  Menu
+&lt;/button&gt;
+&lt;ul id="dropdown-menu" hidden&gt;
+  &lt;li&gt;&lt;a href="#item1"&gt;Item 1&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#item2"&gt;Item 2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+                </div>
+
+                <div class="good-example">
+                    <h4>Example of an alert message:</h4>
+                    <pre><code>&lt;div 
+  role="alert" 
+  aria-live="assertive"&gt;
+  Changes saved successfully
+&lt;/div&gt;</code></pre>
+                </div>
+
+                <div class="tip">
+                    <h4>Important rule:</h4>
+                    <p>Do not use ARIA when a native semantic HTML element already provides the behavior. Use ARIA only
+                        when HTML lacks the needed semantics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Accessibility testing -->
+        <section>
+            <h2>Accessibility testing</h2>
+            <p>After applying accessibility principles, it is important to test your site to ensure it is actually
+                accessible.</p>
+
+            <div class="tip">
+                <h4>Ways to test accessibility:</h4>
+                <ul>
+                    <li>Use your site with keyboard only (no mouse)</li>
+                    <li>Test with a screen reader such as NVDA or VoiceOver</li>
+                    <li>Use automated evaluation tools like WAVE or axe</li>
+                    <li>Test with real users with disabilities</li>
+                    <li>Test with different zoom levels</li>
+                    <li>Test with high contrast settings</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>This guide was created to illustrate HTML accessibility principles</p>
+        <p>Remember: accessibility is not just a legal requirement, it is an ethical practice that ensures the web is
+            inclusive for everyone</p>
+    </footer>
+</body>
+
+</html>
