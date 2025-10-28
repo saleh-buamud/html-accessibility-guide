@@ -9,8 +9,16 @@ A short description of the project file `index.html`.
 - CSS design: eye-friendly palette, comfortable spacing, accessible focus outlines, and readable code blocks.
 
 ## How to view
-Open `index.html` in any modern web browser (double-click or right-click → Open with → Browser).
+Open `index.html` in any modern web browser (double-click or right-click → Open with → Browser).  
+Or visit the live version here:  
+👉 **[View the website](https://saleh-buamud.github.io/html-accessibility-guide/)**
 
 ## Notes
 - The file is intended as a demonstration and learning resource, not a production template.
-- All explanatory comments and examples are written in English inside the HTML file.# html-accessibility-guide
+- All explanatory comments and examples are written in English inside the HTML file.
+
+---
+
+# html-accessibility-guide
+
+**Live demo:** [https://saleh-buamud.github.io/html-accessibility-guide/](https://saleh-buamud.github.io/html-accessibility-guide/)
